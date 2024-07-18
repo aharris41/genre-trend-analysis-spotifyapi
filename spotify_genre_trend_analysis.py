@@ -79,6 +79,18 @@ def POSTRequest(url, header): # Gets POST request from given URL and tests if it
     else:
         return f"Unsuccessful request, error code: {request.status_code}" # find out how to return only the entry not both
 
+def SearchGenreTracks(genre, limit, header, market, offset, year_range = None): # Mainly for use with SearchByGenre # Good
+    url = f'https://api.spotify.com/v1/search?q=genre:{genre}'
+    
+    # Checking if we have a year given (i.e., for GenreTrendAnalysis)
+    if year_range: # Meaning we have a year range given
+        url += f' year:{year_range}' # good
+    url += f'&type=track&market={market}&limit={limit}&offset={offset}'
+    
+    request = POSTRequest(url, header) # Gets search
+    #print(type(request))
+    return request
+
 def ExtractTrackID(track_name, artist_name = None): # In use with the SearchItems function to retrieve the track ID by track name
         # 1. Get the result from SearchItems function
         # 2. Filter the result to organize into a dictionary the artist name, name of the track matching the given one, and track ID
@@ -344,11 +356,11 @@ def GetSeveralAudioFeatures(track_names, artist_name = None): # Gets lots of inf
     url = endpoint + "?ids=" + track_ids_string
     #print(url) # good
     request = POSTRequest(url, header)
-    """
+    print(type(request))
     print("\n", request)
     print(request.keys())
     print(request['audio_features'][0]['uri']) # first song in the request
-    """
+    
     num_songs = len(request['audio_features']) # length of however many arguments we have
     
     """
@@ -980,7 +992,7 @@ for decade in decades:
 
 """
 # pop 2010s, 2000s, 1990s work
-year_range = "1980-1989"
+year_range = "2010-2019"
 pop_search_2010s = SearchByGenre(access_token, genre, year_range=year_range) # Returns a list (this is for any song released, not most popular ones)
 #print(f"pop search: {pop_search_2010s}")
 #print(f"pop search type: {type(pop_search_2010s)}")
@@ -990,4 +1002,9 @@ if type(pop_search_2010s) is None:
     print("pop_search_2010s returned nothing")
 else:
     print("pop_search_2010s search did return something, doing genretrendanalysis")
-    pop_genre_trend_analysis_2010s = GenreTrendAnalysis(pop_search_2010s, "1980s Pop")
+    pop_genre_trend_analysis_2010s = GenreTrendAnalysis(pop_search_2010s, "2010s Pop")
+    
+    
+    
+    
+    
